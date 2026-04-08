@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from .models import ConfirmationCode
+
+User = get_user_model()
 
 class UserAuthSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=150)
@@ -47,5 +49,5 @@ class ConfirmUserSerializer(serializers.Serializer):
         user = self.validated_data['user']
         user.is_active = True
         user.save()
-        user.confirmation_code.delete()  # удаляем код
+        user.confirmation_code.delete()  
         return user
