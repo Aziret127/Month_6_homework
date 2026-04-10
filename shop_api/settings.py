@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'product',
     'users',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -59,11 +60,13 @@ MIDDLEWARE = [
 
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
+    
+    'DEFAULT_AUTHENTICATION_CLASSES':
+     [
         'rest_framework.authentication.TokenAuthentication'
-    ]
+     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
-
 ROOT_URLCONF = 'shop_api.urls'
 
 TEMPLATES = [
@@ -82,6 +85,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'shop_api.wsgi.application'
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Token': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization',
+            'description': 'Token <token>'
+        }}
+    }
+
 
 
 # Database

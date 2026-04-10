@@ -1,19 +1,25 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth.models import User
 from .serializers import UserCreateSerializer, UserAuthSerializer, ConfirmUserSerializer
+from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
-from .models import ConfirmationCode
-from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
+# from rest_framework.views import APIView
 import random
+from django.contrib.auth import get_user_model
+from .models import ConfirmationCode
 
 User = get_user_model()
 
+# class AuthorizationAPIView(GenericAPIView):
+class AuthorizationAPIView(GenericAPIView):
+    serializer_class = UserAuthSerializer
 
-class AuthorizationAPIView(APIView):
     def post(self, request):
-        serializer = UserAuthSerializer(data=request.data)
+        # serializer = UserAuthSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         username = serializer.validated_data['username']
@@ -25,10 +31,13 @@ class AuthorizationAPIView(APIView):
             return Response({'key': token.key})
         return Response({'error': 'user credentials are wrong!'}, status=status.HTTP_401_UNAUTHORIZED)
 
+# class RegistrationAPIView(APIView):
+class RegistrationAPIView(GenericAPIView):
+    serializer_class = UserCreateSerializer
 
-class RegistrationAPIView(APIView):
     def post(self, request):
-        serializer = UserCreateSerializer(data=request.data)
+        # serializer = UserCreateSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         username = serializer.validated_data.get('username')
@@ -46,10 +55,13 @@ class RegistrationAPIView(APIView):
             status=status.HTTP_201_CREATED
         )
 
+# class ConfirmUserApiView(APIView):
+class ConfirmUserAPIView(GenericAPIView):
+    serializer_class = ConfirmUserSerializer
 
-class ConfirmUserAPIView(APIView):
     def post(self, request):
-        serializer = ConfirmUserSerializer(data=request.data)
+        # serializer = ConfirmUserSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({"detail": "Пользователь подтвержден и активирован"}, status=status.HTTP_200_OK)

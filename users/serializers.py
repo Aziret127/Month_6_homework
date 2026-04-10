@@ -3,6 +3,7 @@ from rest_framework.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from .models import ConfirmationCode
 
+
 User = get_user_model()
 
 class UserAuthSerializer(serializers.Serializer):

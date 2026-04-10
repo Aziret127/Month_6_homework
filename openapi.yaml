@@ -1,0 +1,753 @@
+openapi: 3.0.3
+info:
+  title: ''
+  version: 0.0.0
+paths:
+  /api/v1/product/:
+    get:
+      operationId: product_list
+      tags:
+      - product
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+          description: ''
+    post:
+      operationId: product_create
+      tags:
+      - product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductValidate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductValidate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductValidate'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductValidate'
+          description: ''
+  /api/v1/product/{id}/:
+    get:
+      operationId: product_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - product
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDetail'
+          description: ''
+    put:
+      operationId: product_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductValidate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductValidate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductValidate'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductValidate'
+          description: ''
+    patch:
+      operationId: product_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProductValidate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProductValidate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProductValidate'
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductValidate'
+          description: ''
+    delete:
+      operationId: product_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - product
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/v1/product/categories/:
+    get:
+      operationId: product_categories_list
+      tags:
+      - product
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+          description: ''
+    post:
+      operationId: product_categories_create
+      tags:
+      - product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryValidate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CategoryValidate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CategoryValidate'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryValidate'
+          description: ''
+  /api/v1/product/categories/{id}/:
+    get:
+      operationId: product_categories_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - product
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+    put:
+      operationId: product_categories_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryValidate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CategoryValidate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CategoryValidate'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryValidate'
+          description: ''
+    patch:
+      operationId: product_categories_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoryValidate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoryValidate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCategoryValidate'
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryValidate'
+          description: ''
+    delete:
+      operationId: product_categories_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - product
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/v1/product/categories/count/:
+    get:
+      operationId: product_categories_count_list
+      tags:
+      - product
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryWithCountSerialzier'
+          description: ''
+    post:
+      operationId: product_categories_count_create
+      tags:
+      - product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryWithCountSerialzier'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CategoryWithCountSerialzier'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CategoryWithCountSerialzier'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryWithCountSerialzier'
+          description: ''
+  /api/v1/product/products/reviews/:
+    get:
+      operationId: product_products_reviews_list
+      tags:
+      - product
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductWithReviews'
+          description: ''
+    post:
+      operationId: product_products_reviews_create
+      tags:
+      - product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductWithReviews'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProductWithReviews'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProductWithReviews'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductWithReviews'
+          description: ''
+  /api/v1/product/reviews/:
+    get:
+      operationId: product_reviews_list
+      tags:
+      - product
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+          description: ''
+    post:
+      operationId: product_reviews_create
+      tags:
+      - product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewValidate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReviewValidate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReviewValidate'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewValidate'
+          description: ''
+  /api/v1/product/reviews/{id}/:
+    get:
+      operationId: product_reviews_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - product
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+          description: ''
+    put:
+      operationId: product_reviews_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewValidate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ReviewValidate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReviewValidate'
+        required: true
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewValidate'
+          description: ''
+    patch:
+      operationId: product_reviews_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedReviewValidate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedReviewValidate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedReviewValidate'
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewValidate'
+          description: ''
+    delete:
+      operationId: product_reviews_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - product
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/v1/users/auth/:
+    post:
+      operationId: users_auth_create
+      tags:
+      - users
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/users/confirm/:
+    post:
+      operationId: users_confirm_create
+      tags:
+      - users
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/users/register/:
+    post:
+      operationId: users_register_create
+      tags:
+      - users
+      security:
+      - tokenAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+      required:
+      - id
+      - name
+    CategoryValidate:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+      - name
+    CategoryWithCountSerialzier:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        products_count:
+          type: integer
+      required:
+      - id
+      - name
+      - products_count
+    PatchedCategoryValidate:
+      type: object
+      properties:
+        name:
+          type: string
+    PatchedProductValidate:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        price:
+          type: integer
+        category:
+          type: integer
+    PatchedReviewValidate:
+      type: object
+      properties:
+        text:
+          type: string
+        product:
+          type: integer
+        stars:
+          type: number
+          format: double
+          maximum: 11
+          minimum: 1
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        category:
+          type: integer
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+      required:
+      - category
+      - id
+      - price
+      - title
+    ProductDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        category:
+          type: integer
+      required:
+      - category
+      - id
+      - price
+      - title
+    ProductValidate:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        price:
+          type: integer
+        category:
+          type: integer
+      required:
+      - category
+      - price
+      - title
+    ProductWithReviews:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/Review'
+          readOnly: true
+        rating:
+          type: string
+          readOnly: true
+      required:
+      - id
+      - rating
+      - reviews
+      - title
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        text:
+          type: string
+        stars:
+          allOf:
+          - $ref: '#/components/schemas/StarsEnum'
+          minimum: -9223372036854775808
+          maximum: 9223372036854775807
+      required:
+      - id
+      - text
+    ReviewValidate:
+      type: object
+      properties:
+        text:
+          type: string
+        product:
+          type: integer
+        stars:
+          type: number
+          format: double
+          maximum: 11
+          minimum: 1
+      required:
+      - product
+      - stars
+    StarsEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      type: integer
+      description: "* `1` - * \n* `2` - * * \n* `3` - * * * \n* `4` - * * * * \n*
+        `5` - * * * * * \n* `6` - * * * * * * \n* `7` - * * * * * * * \n* `8` - *
+        * * * * * * * \n* `9` - * * * * * * * * * \n* `10` - * * * * * * * * * * "
+  securitySchemes:
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Token"
