@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
 from pathlib import Path
-
+from datetime import timedelta
 
 
 
@@ -45,7 +45,9 @@ INSTALLED_APPS = [
     'product',
     'users',
     'rest_framework.authtoken',
-    'drf_spectacular',
+    'drf_yasg',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -63,7 +65,9 @@ REST_FRAMEWORK = {
     
     'DEFAULT_AUTHENTICATION_CLASSES':
      [
-        'rest_framework.authentication.TokenAuthentication'
+        'rest_framework.authentication.TokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication'
      ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
@@ -93,11 +97,22 @@ SWAGGER_SETTINGS = {
             'in': 'header',
             'name': 'Authorization',
             'description': 'Token <token>'
-        }}
-    }
+        },
+        'Bearer': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization',
+            'description': 'Bearer <token>',
+        }
+    }}
 
-
-
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
+}
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 

@@ -10,6 +10,9 @@ from rest_framework.generics import GenericAPIView
 import random
 from django.contrib.auth import get_user_model
 from .models import ConfirmationCode
+from rest_framework_simplejwt.views import TokenObtainPairView
+from users.serializers import CustomTokenObtainPairSerializer
+
 
 User = get_user_model()
 
@@ -22,10 +25,10 @@ class AuthorizationAPIView(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        username = serializer.validated_data['username']
+        email = serializer.validated_data['email']
         password = serializer.validated_data['password']
 
-        user = authenticate(username=username, password=password)
+        user = authenticate(email=email, password=password)
         if user:
             token, _ = Token.objects.get_or_create(user=user)
             return Response({'key': token.key})
@@ -40,15 +43,16 @@ class RegistrationAPIView(GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        username = serializer.validated_data.get('username')
+        email = serializer.validated_data.get('email')
         password = serializer.validated_data.get('password')
+        birthdate = serializer.validated_data.get('birthdate')  
 
-        user = User.objects.create_user(username=username, password=password, is_active=False)
+        user = User.objects.create_user(email=email, password=password, is_active=False, birthdate=birthdate)
 
         code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
         ConfirmationCode.objects.create(user=user, code=code)
 
-        print(f'Код подтверждения для пользователя {username}: {code}')  # Для отладки
+        print(f'Код подтверждения для пользователя {email}: {code}')  
 
         return Response(
             {'user_id': user.id, 'detail': 'Пользователь создан. Проверьте код подтверждения.'},
@@ -74,10 +78,10 @@ def authorization_api_view(request):
     serializer = UserAuthSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    username = serializer.validated_data['username']
+    email = serializer.validated_data['email']
     password = serializer.validated_data['password']
 
-    user = authenticate(username=username, password=password)
+    user = authenticate(email=email, password=password)
     if user:
         try:
             token = Token.objects.get(user=user)
@@ -92,15 +96,15 @@ def registraion_api_view(request):
     serializer = UserCreateSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
 
-    username = serializer.validated_data.get('username')
+    email = serializer.validated_data.get('email')
     password = serializer.validated_data.get('password')
 
-    user = User.objects.create_user(username=username, password=password, is_active=False)
+    user = User.objects.create_user(email=email, password=password, is_active=False)
 
     code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
     ConfirmationCode.objects.create(user=user, code=code)
 
-    print(f'Код подтверждения для пользователя {username}: {code}')  # Для отладки
+    print(f'Код подтверждения для пользователя {email}: {code}')  
 
     return Response(
         data={'user_id': user.id, 'detail': 'Пользователь создан. Проверьте код подтверждения.'},
@@ -115,3 +119,7 @@ def confirm_user_api_view(request):
         serializer.save()
         return Response({"detail": "Пользователь подтвержден и активирован"}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer

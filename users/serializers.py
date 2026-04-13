@@ -2,36 +2,62 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from .models import ConfirmationCode
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.contrib.auth import authenticate
+from .models import CustomUser  
 
 
 User = get_user_model()
 
 class UserAuthSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=150)
+    email = serializers.EmailField(max_length=150)
     password = serializers.CharField()
+
+    def validate(self, data):
+        user = authenticate(email=data['email'], password=data['password'])
+        if not user:
+            raise serializers.ValidationError("Неверный email или пароль")
+        data['user'] = user
+        return data
+    
 
 class UserCreateSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=150)
+    email = serializers.EmailField(max_length=150)
     password = serializers.CharField()
+    birthdate = serializers.DateField()
 
-    def validate_username(self, username):
+    class Meta:
+        model = User
+        fields = ('email', 'password', 'birthdate')
+
+    def create(self, validated_data):
+        user = CustomUser.objects.create_user(
+            email=validated_data['email'],
+            username=validated_data['username'],
+            password=validated_data['password'],
+            phone=validated_data.get('phone'),
+            birthdate=validated_data.get('birthdate')
+        )
+        return user
+
+    def validate_email(self, email):
         try:
-            User.objects.get(username=username)
+            User.objects.get(email=email)
         except:
-            return username
+            return email
         raise ValidationError('User already exists!')
 
 
 class ConfirmUserSerializer(serializers.Serializer):
-    username = serializers.CharField()
+    email = serializers.EmailField(max_length=150)
     code = serializers.CharField(max_length=6)
 
     def validate(self, data):
-        username = data['username']
+        email = data['email']
         code = data['code']
 
         try:
-            user = User.objects.get(username=username)
+            user = User.objects.get(email=email)
         except User.DoesNotExist:
             raise serializers.ValidationError("Пользователь не найден")
 
@@ -52,3 +78,10 @@ class ConfirmUserSerializer(serializers.Serializer):
         user.save()
         user.confirmation_code.delete()  
         return user
+    
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['birthdate'] = str(user.birthdate) 
+        return token

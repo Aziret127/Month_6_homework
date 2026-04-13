@@ -1,14 +1,15 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-
 from .models import Product, Category, Review
 from .serializers import CategorySerializer, ProductSerializer, ReviewSerializer, ProductDetailSerializer, ReviewValidateSerializer
 from .serializers import ProductWithReviewsSerializer, CategoryWithCountSerialzier, ProductValidateSerializer, CategoryValidateSerializer
 from django.db.models import Count
 from django.db import transaction
-from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from common.permissions import IsModerator
+from common.validators import validate_age
+
 
 class CategoryListCreateAPIView(ListCreateAPIView):
     queryset = Category.objects.all()
@@ -52,6 +53,10 @@ class ProductListCreateAPIView(ListCreateAPIView):
         return ProductSerializer
 
     def create(self, request, *args, **kwargs):
+        birthdate = request.auth.get('birthdate')
+        validate_age(birthdate)
+        
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         with transaction.atomic():

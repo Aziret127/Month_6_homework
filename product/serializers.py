@@ -1,11 +1,10 @@
-from itertools import product
-
 from rest_framework import serializers
 from unicodedata import category
-
 from .models import Category, Product, Review
-from django.db.models import Avg, Count
+from django.db.models import Avg
 from rest_framework.exceptions import ValidationError
+
+
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
