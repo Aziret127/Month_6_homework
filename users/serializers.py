@@ -9,6 +9,10 @@ from .models import CustomUser
 
 User = get_user_model()
 
+class OauthSerializer(serializers.Serializer):
+    code = serializers.CharField()
+
+
 class UserAuthSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=150)
     password = serializers.CharField()
