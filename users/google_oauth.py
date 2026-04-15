@@ -1,5 +1,7 @@
 import os
 import requests
+from django.utils import timezone
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import get_user_model
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
@@ -8,6 +10,23 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from users.serializers import OauthSerializer
 
 User = get_user_model()
+
+# def Google_user_data(backend, user, response, *args, **kwargs):
+
+#     if backend.name == 'google-oauth2':
+
+#         user.first_name = response.get('given_name', '')
+#         user.last_name = response.get('family_name', '')
+
+#         user.google_id = response.get('id', '')
+
+#         user.is_active = True
+
+#         user.last_login = timezone.now()
+
+#         user.save()
+
+#     return {'user': user}
 
 
 class GoogleLoginAPIView(CreateAPIView):
@@ -53,6 +72,14 @@ class GoogleLoginAPIView(CreateAPIView):
             email=email,
         )
         print("USER CREATED: ", created)
+
+        # Обновляем поля пользователя из Google данных
+        user.first_name = user_info.get('given_name', '')
+        user.last_name = user_info.get('family_name', '')
+        user.google_id = user_info.get('id', '')
+        user.is_active = True
+        user.last_login = timezone.now()
+        user.save()
 
         refresh = RefreshToken.for_user(user)
         refresh["email"] = user.email
