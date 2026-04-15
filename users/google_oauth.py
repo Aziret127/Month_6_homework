@@ -66,6 +66,7 @@ class GoogleLoginAPIView(CreateAPIView):
         print(f"user_info: {user_info}")
         print("=|" * 50)
 
+
         email = user_info["email"]
 
         user, created = User.objects.get_or_create(
