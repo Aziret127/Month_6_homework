@@ -73,7 +73,6 @@ class GoogleLoginAPIView(CreateAPIView):
         )
         print("USER CREATED: ", created)
 
-        # Обновляем поля пользователя из Google данных
         user.first_name = user_info.get('given_name', '')
         user.last_name = user_info.get('family_name', '')
         user.google_id = user_info.get('id', '')
