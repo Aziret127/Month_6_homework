@@ -9,10 +9,10 @@ from rest_framework.generics import GenericAPIView
 # from rest_framework.views import APIView
 import random
 from django.contrib.auth import get_user_model
-from .models import ConfirmationCode
 from rest_framework_simplejwt.views import TokenObtainPairView
 from users.serializers import CustomTokenObtainPairSerializer
-
+from . import redis_utils
+from django.core.mail import send_mail
 
 User = get_user_model()
 
@@ -50,9 +50,8 @@ class RegistrationAPIView(GenericAPIView):
         user = User.objects.create_user(email=email, password=password, is_active=False, birthdate=birthdate)
 
         code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
-        ConfirmationCode.objects.create(user=user, code=code)
-
-        print(f'Код подтверждения для пользователя {email}: {code}')  
+        redis_utils.save_code_to_cache(user.email, code)
+        print('Code generated and saved to cache.')
 
         return Response(
             {'user_id': user.id, 'detail': 'Пользователь создан. Проверьте код подтверждения.'},
@@ -102,8 +101,7 @@ def registraion_api_view(request):
     user = User.objects.create_user(email=email, password=password, is_active=False)
 
     code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
-    ConfirmationCode.objects.create(user=user, code=code)
-
+    redis_utils.save_code_to_cache(user.email, code)
     print(f'Код подтверждения для пользователя {email}: {code}')  
 
     return Response(

@@ -7,9 +7,9 @@ from .serializers import ProductWithReviewsSerializer, CategoryWithCountSerialzi
 from django.db.models import Count
 from django.db import transaction
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from common.permissions import IsModerator
 from common.validators import validate_age
-
+from django.core.cache import cache
+from common.permissions import IsOwner, IsAnonymous
 
 class CategoryListCreateAPIView(ListCreateAPIView):
     queryset = Category.objects.all()
@@ -45,8 +45,20 @@ class CategoryDetailAPIView(RetrieveUpdateDestroyAPIView):
 
 class ProductListCreateAPIView(ListCreateAPIView):
     queryset = Product.objects.all()
-    permission_classes = [IsModerator]
+    permission_classes = [IsOwner]
 
+    def get(self, request, *args, **kwargs):
+        cached_data = cache.get('product_list')
+        if cached_data:
+            print('redis cache')
+            return Response(cached_data, status=status.HTTP_200_OK)
+
+        response = super().get(self, request, *args, *kwargs)
+        print('первый запрос в базу')
+        if response.data.get("total", 0) > 0:
+            cache.set('product_list', response.data, timeout=150)
+        return response
+       
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return ProductValidateSerializer
@@ -72,7 +84,7 @@ class ProductListCreateAPIView(ListCreateAPIView):
 class ProductDetailAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     lookup_field = 'id'
-    permission_classes = [IsModerator]
+    permission_classes = [IsOwner]
 
     def get_serializer_class(self):
         if self.request.method in ['PUT', 'PATCH']:
