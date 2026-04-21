@@ -6,22 +6,22 @@ from .serializers import UserCreateSerializer, UserAuthSerializer, ConfirmUserSe
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import GenericAPIView
-# from rest_framework.views import APIView
 import random
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
 from users.serializers import CustomTokenObtainPairSerializer
 from . import redis_utils
-from django.core.mail import send_mail
+from users.tasks import add, send_otp_mail, send_report_mail 
 
 User = get_user_model()
 
-# class AuthorizationAPIView(GenericAPIView):
 class AuthorizationAPIView(GenericAPIView):
     serializer_class = UserAuthSerializer
 
     def post(self, request):
-        # serializer = UserAuthSerializer(data=request.data)
+        
+        from time import sleep
+        add.delay(5, 4)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -34,12 +34,10 @@ class AuthorizationAPIView(GenericAPIView):
             return Response({'key': token.key})
         return Response({'error': 'user credentials are wrong!'}, status=status.HTTP_401_UNAUTHORIZED)
 
-# class RegistrationAPIView(APIView):
 class RegistrationAPIView(GenericAPIView):
     serializer_class = UserCreateSerializer
 
     def post(self, request):
-        # serializer = UserCreateSerializer(data=request.data)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -50,6 +48,8 @@ class RegistrationAPIView(GenericAPIView):
         user = User.objects.create_user(email=email, password=password, is_active=False, birthdate=birthdate)
 
         code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
+        send_otp_mail.delay(email, code)  # Отправляем код подтверждения по электронной почте асинхронно
+
         redis_utils.save_code_to_cache(user.email, code)
         print('Code generated and saved to cache.')
 
@@ -58,12 +58,10 @@ class RegistrationAPIView(GenericAPIView):
             status=status.HTTP_201_CREATED
         )
 
-# class ConfirmUserApiView(APIView):
 class ConfirmUserAPIView(GenericAPIView):
     serializer_class = ConfirmUserSerializer
 
     def post(self, request):
-        # serializer = ConfirmUserSerializer(data=request.data)
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             serializer.save()

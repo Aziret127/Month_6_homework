@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 from datetime import timedelta
-
+from decouple import config
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,10 +23,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('AZIRET', 'default_secret_key')  # Получаем секретный ключ из переменных окружения, с запасным значением    
+SECRET_KEY = config('AZIRET')  # Получаем секретный ключ из переменных окружения, с запасным значением    
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config("DEBUG", cast=bool)
+
 
 ALLOWED_HOSTS = []
 
@@ -90,20 +91,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'shop_api.wsgi.application'
 
-# SOCIAL_AUTH_PIPELINE = (
-#     'social_core.pipeline.social_auth.social_details',
-#     'social_core.pipeline.social_auth.social_uid',
-#     'social_core.pipeline.social_auth.auth_allowed',
-#     'social_core.pipeline.social_auth.social_user',
-#     'social_core.pipeline.user.get_username',
-#     'social_core.pipeline.user.create_user',
-#     'social_core.pipeline.social_auth.associate_user',
-#     'social_core.pipeline.social_auth.load_extra_data',
-#     'social_core.pipeline.user.user_details',
-#     'users.pipeline.save_google_user_data', 
-# )
 
-# AUTH_USER_MODEL = 'users.User'
 
 CACHES = {
     "default": {
@@ -207,3 +195,12 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.CustomUser'
+
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/2"
+CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/2"
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
